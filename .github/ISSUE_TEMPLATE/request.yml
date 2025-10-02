@@ -1,0 +1,59 @@
+name: "New Repository Request"
+description: "Request provisioning of a new repository (with or without a new team)"
+title: "[REQUEST] <team-name>:<repo-name>"
+labels: ["repo-request"]
+body:
+  - type: input
+    id: team
+    attributes:
+      label: Team Name
+      description: Enter your team name
+      placeholder: ex. analytics-team
+    validations:
+      required: true
+
+  - type: input
+    id: imt
+    attributes:
+      label: IMT
+      description: Enter your IMT or cost center
+      placeholder: ex. IMT-12345
+    validations:
+      required: true
+
+  - type: input
+    id: repo
+    attributes:
+      label: Repository Name
+      description: Desired name for the new repo
+      placeholder: ex. cool-new-repo
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Programming Language
+      description: Select the repo type
+      options:
+        - python
+        - java
+        - node
+        - ruby
+        - csharp
+        - cpp
+        - docker
+        - terraform
+    validations:
+      required: true
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request Type
+      description: Do you need a new team as well?
+      options:
+        - New Team + Repo
+        - Repo Only (existing team)
+    validations:
+      required: true
