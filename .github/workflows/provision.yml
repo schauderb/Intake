@@ -1,0 +1,43 @@
+name: Provision Repository
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  provision:
+    if: github.event.comment.body == 'APPROVE'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      contents: write
+      metadata: read
+
+    steps:
+      - name: Parse issue form
+        id: parse
+        run: |
+          # Extract from issue body
+          TEAM=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body' | grep "Team Name" -A1 | tail -1 | xargs)
+          REPO=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body' | grep "Repository Name" -A1 | tail -1 | xargs)
+          LANGUAGE=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body' | grep "Programming Language" -A1 | tail -1 | xargs)
+          echo "team_name=$TEAM" >> $GITHUB_ENV
+          echo "repo_name=$REPO" >> $GITHUB_ENV
+          echo "language=$LANGUAGE" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create repo from template
+        uses: peter-evans/create-repository@v3
+        with:
+          token: ${{ secrets.ORG_ADMIN_TOKEN }}
+          repository: ${{ env.repo_name }}
+          owner: ${{ github.repository_owner }}
+          template: template-${{ env.language }}
+
+      - name: Comment success
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: "✅ Repository `${{ env.repo_name }}` created from template `${{ env.language }}` for team `${{ env.team_name }}`."
