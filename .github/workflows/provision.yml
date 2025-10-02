@@ -11,7 +11,7 @@ jobs:
     permissions:
       issues: read
       contents: write
-      metadata: read
+      # metadata: read
 
     steps:
       - name: Parse issue form
